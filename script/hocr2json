@@ -1,0 +1,37 @@
+#!perl
+use strict;
+use OCR::hOCR;
+
+OCR::hOCR::App->run;
+
+__END__
+
+=head1 NAME
+
+hocr2json - convert hOCR file to JSON file
+
+=head1 DESCRIPTION
+
+C<hocr2json> ....
+
+Specifically:
+
+=over 4
+
+=item *
+
+C<hocr2json> ...
+
+=item *
+
+C<hocr2json> ...
+
+=item *
+
+C<hocr2json> ...
+
+=back
+
+Other commands ....
+
+=cut
