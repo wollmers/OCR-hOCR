@@ -13,11 +13,12 @@ sub prepare_command {
 
     if ($cmd->isa("OCR::App::Command::convert")) {
         $opt->{install_command} ||= 'cpanm .';
-    } elsif ($cmd->isa("OCR::App::Command::check")) {
-        $ENV{DZIL_CONFIRMRELEASE_DEFAULT} = 1
-          unless defined $ENV{DZIL_CONFIRMRELEASE_DEFAULT};
-    } elsif ($cmd->isa("OCR::App::Command::new")) {
-        $opt->{provider} = 'hOCR';
+    }
+    elsif ($cmd->isa("OCR::App::Command::check")) {
+
+    }
+    elsif ($cmd->isa("OCR::App::Command::new")) {
+
     }
 
     return $cmd, $opt, @args;

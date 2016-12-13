@@ -7,6 +7,7 @@ use warnings;
 our $VERSION = '0.01';
 
 use XML::Twig;
+use Mojo::DOM58;
 
 our $html = [];
 
@@ -19,6 +20,8 @@ sub new {
 sub parse {
   my ($self, $XML) = @_;
 
+  my $dom = Mojo::DOM58->new->parse($XML);
+
   my $twig = XML::Twig->new(
     #remove_cdata => 1,
     TwigHandlers => {
@@ -26,7 +29,8 @@ sub parse {
     }
   );
 
-  eval { $twig->parse($XML); };
+  #eval { $twig->parse($XML); };
+  eval { $twig->parse($dom->xml(1)->to_string); };
 
   if ($@) {
     #print STDERR "XML PARSE ERROR: " . $@;
@@ -39,6 +43,17 @@ sub parse {
 sub parsefile {
   my ($self, $XMLFILE) = @_;
 
+  my $string;
+
+{
+  local $/=undef;
+  open(my $xml_fh,"<:encoding(UTF-8)",$XMLFILE) or die "cannot open $XMLFILE: $!";
+  $string = <$xml_fh>;
+  close $xml_fh;
+}
+
+  my $dom = Mojo::DOM58->new->parse($string);
+
   my $twig = XML::Twig->new(
     #remove_cdata => 1,
     TwigHandlers => {
@@ -46,7 +61,8 @@ sub parsefile {
     }
   );
 
-  eval { $twig->parsefile($XMLFILE); };
+  #eval { $twig->parsefile($XMLFILE); };
+  eval { $twig->parse($dom->xml(1)->to_string); };
 
   if ($@) {
     #print STDERR "XML PARSE ERROR: " . $@;
@@ -73,7 +89,8 @@ sub element {
   my $attributes = $element->atts;
   for my $attribute (keys %{$attributes}) {
     if ($attribute eq 'title') {
-      title($element_entry,$element->{'att'}->{'title'});
+      $element_entry->{'title'} = {};
+      title($element_entry->{'title'},$element->{'att'}->{'title'});
     }
     elsif ($attribute eq 'class') {
       class($element_entry,$element->{'att'}->{'class'});
@@ -92,31 +109,45 @@ sub element {
       element($child,$element_entry->{'children'});
     }
   }
-
   push @{$parent},$element_entry;
 }
 
 sub title {
   my ($elem,$title) = @_;
 
-  my @title_parts = split(m/;\s*/,$title);
+  my @title_parts = split(m/[;,]\s+/,$title);
 
   for my $title_part (@title_parts) {
     my @strings = split(/\s+/,$title_part);
-    if ($strings[0] =~ /image/) {
+    if ($strings[0] eq 'image') {
       $elem->{'image'} = $strings[1];
     }
-    elsif ($strings[0] =~ /ppageno/) {
+    elsif ($strings[0] eq 'ppageno') {
       $elem->{'ppageno'} = $strings[1];
     }
-    elsif ($strings[0] =~ /bbox/) {
+    elsif ($strings[0] eq 'bbox') {
       $elem->{'bbox'} = bbox(@strings);
     }
-    elsif ($strings[0] =~ /baseline/) {
+    elsif ($strings[0] eq 'baseline') {
       $elem->{'baseline'} = baseline(@strings);
     }
-    elsif ($strings[0] =~ /x_wconf/) {
+    elsif ($strings[0] eq 'x_wconf') {
       $elem->{'x_wconf'} = $strings[1];
+    }
+    # x_confs 0.335380083959 0.455066963347
+    elsif ($strings[0] eq 'x_confs') {
+      shift @strings;
+      $elem->{'x_confs'} = [@strings];
+    }
+    # cuts 0,0,20,0 26,0,42,0
+    elsif ($strings[0] eq 'cuts') {
+      shift @strings;
+      $elem->{'cuts'} = [@strings];
+    }
+    # x_bboxes 195 202 205 227 212 201 229 228
+    elsif ($strings[0] eq 'x_bboxes') {
+      shift @strings;
+      $elem->{'x_bboxes'} = [@strings];
     }
     else {
       $elem->{$strings[0]} = $strings[1];

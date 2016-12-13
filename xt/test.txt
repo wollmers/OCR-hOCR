@@ -1,0 +1,216 @@
+$VAR1 = [
+          {
+            'xmlns' => 'http://www.w3.org/1999/xhtml',
+            'xml:lang' => 'en',
+            'tag' => 'html',
+            'children' => [
+                            {
+                              'tag' => 'head',
+                              'children' => [
+                                              {
+                                                'children' => [],
+                                                'tag' => 'title'
+                                              },
+                                              {
+                                                'http-equiv' => 'Content-Type',
+                                                'content' => 'text/html;charset=utf-8',
+                                                'children' => [],
+                                                'tag' => 'meta'
+                                              },
+                                              {
+                                                'content' => 'tesseract 3.05.00dev',
+                                                'name' => 'ocr-system',
+                                                'tag' => 'meta',
+                                                'children' => []
+                                              },
+                                              {
+                                                'content' => 'ocr_page ocr_carea ocr_par ocr_line ocrx_word',
+                                                'children' => [],
+                                                'tag' => 'meta',
+                                                'name' => 'ocr-capabilities'
+                                              }
+                                            ]
+                            },
+                            {
+                              'tag' => 'body',
+                              'children' => [
+                                              {
+                                                'tag' => 'div',
+                                                'children' => [
+                                                                {
+                                                                  'title' => {
+                                                                               'bbox' => {
+                                                                                           'x1' => '37',
+                                                                                           'y1' => '60',
+                                                                                           'y2' => '95',
+                                                                                           'x2' => '109'
+                                                                                         }
+                                                                             },
+                                                                  'class' => 'ocr_carea',
+                                                                  'id' => 'block_1_1',
+                                                                  'children' => [
+                                                                                  {
+                                                                                    'title' => {
+                                                                                                 'bbox' => {
+                                                                                                             'y1' => '60',
+                                                                                                             'y2' => '95',
+                                                                                                             'x1' => '37',
+                                                                                                             'x2' => '109'
+                                                                                                           }
+                                                                                               },
+                                                                                    'lang' => 'deu',
+                                                                                    'class' => 'ocr_par',
+                                                                                    'id' => 'par_1_1',
+                                                                                    'children' => [
+                                                                                                    {
+                                                                                                      'children' => [
+                                                                                                                      {
+                                                                                                                        'children' => [
+                                                                                                                                        '249'
+                                                                                                                                      ],
+                                                                                                                        'tag' => 'span',
+                                                                                                                        'class' => 'ocrx_word',
+                                                                                                                        'id' => 'word_1_1',
+                                                                                                                        'title' => {
+                                                                                                                                     'bbox' => {
+                                                                                                                                                 'x2' => '109',
+                                                                                                                                                 'y2' => '95',
+                                                                                                                                                 'y1' => '60',
+                                                                                                                                                 'x1' => '37'
+                                                                                                                                               },
+                                                                                                                                     'x_wconf' => '79'
+                                                                                                                                   }
+                                                                                                                      }
+                                                                                                                    ],
+                                                                                                      'tag' => 'span',
+                                                                                                      'class' => 'ocr_line',
+                                                                                                      'id' => 'line_1_1',
+                                                                                                      'title' => {
+                                                                                                                   'x_ascenders' => '11.416667',
+                                                                                                                   'x_descenders' => '11.416667',
+                                                                                                                   'x_size' => '45.666668',
+                                                                                                                   'baseline' => {
+                                                                                                                                   'offset' => '0',
+                                                                                                                                   'skew' => '-0.014'
+                                                                                                                                 },
+                                                                                                                   'bbox' => {
+                                                                                                                               'x2' => '109',
+                                                                                                                               'y1' => '60',
+                                                                                                                               'y2' => '95',
+                                                                                                                               'x1' => '37'
+                                                                                                                             }
+                                                                                                                 }
+                                                                                                    }
+                                                                                                  ],
+                                                                                    'tag' => 'p'
+                                                                                  }
+                                                                                ],
+                                                                  'tag' => 'div'
+                                                                }
+                                                              ],
+                                                'id' => 'page_1',
+                                                'class' => 'ocr_page',
+                                                'title' => {
+                                                             'image' => '"isis_152.png"',
+                                                             'bbox' => {
+                                                                         'x1' => '0',
+                                                                         'y2' => '2817',
+                                                                         'y1' => '0',
+                                                                         'x2' => '2321'
+                                                                       },
+                                                             'ppageno' => '0'
+                                                           }
+                                              }
+                                            ]
+                            }
+                          ],
+            'lang' => 'en'
+          }
+        ];
+$VAR1 = {
+          'tes_3.05' => {
+                          'title' => {},
+                          'ocr_page' => {
+                                        'title' => {
+                                                     'ppageno' => 1,
+                                                     'bbox' => 1,
+                                                     'image' => 1
+                                                   },
+                                        'tag' => {
+                                                   'div' => 1
+                                                 },
+                                        'children' => {},
+                                        'id' => 1
+                                      },
+                          'ocr_par' => {
+                                       'title' => {
+                                                    'bbox' => 1
+                                                  },
+                                       'tag' => {
+                                                  'p' => 1
+                                                },
+                                       'children' => {},
+                                       'lang' => 1,
+                                       'id' => 1
+                                     },
+                          'html' => {
+                                    'lang' => 1,
+                                    'children' => {
+                                                    'head' => 1,
+                                                    'body' => 1
+                                                  },
+                                    'xml:lang' => 1,
+                                    'xmlns' => 1
+                                  },
+                          'meta' => {
+                                    'content' => 1,
+                                    'name' => 1
+                                  },
+                          'body' => {
+                                    'children' => {}
+                                  },
+                          'ocrx_word' => {
+                                         'title' => {
+                                                      'bbox' => 1,
+                                                      'x_wconf' => 1
+                                                    },
+                                         'id' => 1,
+                                         'children' => {
+                                                         'PCDATA' => 1
+                                                       },
+                                         'tag' => {
+                                                    'span' => 1
+                                                  }
+                                       },
+                          'head' => {
+                                    'children' => {
+                                                    'meta' => 3,
+                                                    'title' => 1
+                                                  }
+                                  },
+                          'ocr_line' => {
+                                        'children' => {},
+                                        'tag' => {
+                                                   'span' => 1
+                                                 },
+                                        'id' => 1,
+                                        'title' => {
+                                                     'x_ascenders' => 1,
+                                                     'bbox' => 1,
+                                                     'baseline' => 1,
+                                                     'x_descenders' => 1,
+                                                     'x_size' => 1
+                                                   }
+                                      },
+                          'ocr_carea' => {
+                                         'tag' => {
+                                                    'div' => 1
+                                                  },
+                                         'children' => {},
+                                         'id' => 1,
+                                         'title' => {
+                                                      'bbox' => 1
+                                                    }
+                                       }
+                        }
+        };

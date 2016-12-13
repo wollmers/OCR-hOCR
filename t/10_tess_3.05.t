@@ -8,6 +8,7 @@ use utf8;
 use lib qw(../lib/);
 
 use Test::More;
+use JSON::MaybeXS qw(JSON);
 
 my $class = 'OCR::hOCR';
 
@@ -47,6 +48,9 @@ my $html_string =<<'HTML';
 </html>
 HTML
 
-ok($object->parse($html_string),'parses tesseract 3.05');
+ok($object->parse($html_string),'parses cuneiform');
+
+my $tree = $object->parse($html_string);
+print JSON->new->pretty(1)->encode($tree);
 
 done_testing;
