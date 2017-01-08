@@ -23,7 +23,7 @@ my $html_string =<<'HTML';
 <meta name='ocr-system' content='openocr'>
 </head>
 <body><div class='ocr_page' id='page_1' title='image "biostor-146511_02.png"; bbox 0 0 1742 2808'>
-<p align=justify><span class='ocr_line' id='line_3' title="bbox 191 320 1648 359">camera<br> (Leica DFC425) </span></p>
+<p align=justify><span class='ocr_line' id='line_3' title="bbox 191 320 1648 359">camera (Leica DFC425) </span></p>
 </div>
 </body>
 </html>

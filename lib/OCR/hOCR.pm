@@ -6,10 +6,7 @@ use warnings;
 
 our $VERSION = '0.01';
 
-use XML::Twig;
 use Mojo::DOM58;
-
-our $html = [];
 
 sub new {
   my $class = shift;
@@ -22,22 +19,14 @@ sub parse {
 
   my $dom = Mojo::DOM58->new->parse($XML);
 
-  my $twig = XML::Twig->new(
-    #remove_cdata => 1,
-    TwigHandlers => {
-  	  '/html' => \&html,
-    }
-  );
+  #TODO:
+  #$self->{'doctype'} = $dom->at('doctype');
 
-  #eval { $twig->parse($XML); };
-  eval { $twig->parse($dom->xml(1)->to_string); };
+  $self->{'tree'} = [];
 
-  if ($@) {
-    #print STDERR "XML PARSE ERROR: " . $@;
-    die "XML PARSE ERROR: " . $@;
-  }
+  $self->html($dom->at('html'));
 
-  return $html;
+  return $self->{'tree'};
 }
 
 sub parsefile {
@@ -45,72 +34,80 @@ sub parsefile {
 
   my $string;
 
-{
+  {
   local $/=undef;
   open(my $xml_fh,"<:encoding(UTF-8)",$XMLFILE) or die "cannot open $XMLFILE: $!";
   $string = <$xml_fh>;
   close $xml_fh;
-}
-
-  my $dom = Mojo::DOM58->new->parse($string);
-
-  my $twig = XML::Twig->new(
-    #remove_cdata => 1,
-    TwigHandlers => {
-  	  '/html' => \&html,
-    }
-  );
-
-  #eval { $twig->parsefile($XMLFILE); };
-  eval { $twig->parse($dom->xml(1)->to_string); };
-
-  if ($@) {
-    #print STDERR "XML PARSE ERROR: " . $@;
-    die "XML PARSE ERROR: " . $@;
   }
 
-  return $html;
+  return $self->parse($string);
 }
 
 sub html {
-  my ($t, $element) = @_;
+  my ($self, $element) = @_;
 
-  element($element,$html);
+  $self->element($element,$self->{'tree'});
 }
 
 sub element {
-  my ($element,$parent) = @_;
+  my ($self,$element,$parent) = @_;
 
   my $element_entry = {
     'children' => [],
-    'tag' => $element->tag,
+    'tag' => ($element->type eq 'tag') ? $element->tag : $element->type,
   };
 
-  my $attributes = $element->atts;
+  my $attributes = $element->attr;
   for my $attribute (keys %{$attributes}) {
     if ($attribute eq 'title') {
-      $element_entry->{'title'} = {};
-      title($element_entry->{'title'},$element->{'att'}->{'title'});
+      #$element_entry->{'title'} = {};
+      #title($element_entry->{'title'},$attributes->{'title'});
+      title($element_entry,$attributes->{'title'});
     }
     elsif ($attribute eq 'class') {
-      class($element_entry,$element->{'att'}->{'class'});
+      class($element_entry,$attributes->{'class'});
     }
     else {
-      $element_entry->{$attribute} = $element->{'att'}->{$attribute};
+      $element_entry->{$attribute} = $attributes->{$attribute};
     }
   }
 
-  my @children = $element->children();
-  for my $child (@children) {
-    if ($child->tag eq '#PCDATA') {
-      push @{$element_entry->{'children'}}, $child->text;
+  my $children = $element->child_nodes();
+  for my $child (@{$children}) {
+    if ($child->type eq 'text' || $child->type eq 'raw' || $child->type eq 'cdata' ) {
+      push @{$element_entry->{'children'}}, $child->tree->[1]
+        unless ($child->tree->[1] =~ m/^\s*\n\s*$/);
     }
     else {
-      element($child,$element_entry->{'children'});
+      $self->element($child,$element_entry->{'children'});
     }
   }
   push @{$parent},$element_entry;
 }
+
+sub index {
+  my $self = shift;
+  my $nodes = @_ ? shift : $self->{'tree'};
+  return unless @{$nodes};
+
+  for my $node (@{$nodes}) {
+    next unless (ref $node);
+    if (exists $node->{'id'}) {
+      $self->{'ids'}->{$node->{'id'}} = $node;
+      #if (exists $node->{'type'}) {
+      #  push @{$self->{'types'}->{$node->{'type'}}},$node->{'id'};
+      #}
+      for my $key (qw(t b l r type)) {
+        if (exists $node->{$key}) {
+          push @{$self->{$key}->{$node->{$key}}},$node->{'id'};
+        }
+      }
+    }
+    $self->index($node->{'children'}) if (exists $node->{'children'});
+  }
+}
+
 
 sub title {
   my ($elem,$title) = @_;
@@ -126,10 +123,14 @@ sub title {
       $elem->{'ppageno'} = $strings[1];
     }
     elsif ($strings[0] eq 'bbox') {
-      $elem->{'bbox'} = bbox(@strings);
+      #$elem->{'bbox'} = bbox(@strings);
+      my $bbox = bbox(@strings);
+      @{$elem}{keys %{$bbox}} = values %{$bbox};
     }
     elsif ($strings[0] eq 'baseline') {
-      $elem->{'baseline'} = baseline(@strings);
+      #$elem->{'baseline'} = baseline(@strings);
+      my $baseline = baseline(@strings);
+      @{$elem}{keys %{$baseline}} = values %{$baseline};
     }
     elsif ($strings[0] eq 'x_wconf') {
       $elem->{'x_wconf'} = $strings[1];
@@ -160,24 +161,42 @@ sub title {
 sub class {
   my ($elem,$class) = @_;
 
-  $elem->{'class'} = $class;
-
+  my @parts = split(m/\s+/,$class);
+  for my $part (@parts) {
+    if ($part =~ m/^ocr/i) {
+      $elem->{'type'} = lc($part);
+    }
+    else {
+      push @{$elem->{'class'}}, lc($part);
+    }
+  }
 }
 
 sub baseline {
   return {
-        'skew' => $_[1],
-        'offset' => $_[2],
+    'skew' => $_[1],
+    'offset' => $_[2],
   };
 }
 
 sub bbox {
   return {
-    'x1' => $_[1],
-    'y1' => $_[2],
-    'x2' => $_[3],
-    'y2' => $_[4],
+    'l' => $_[1],
+    't' => $_[2],
+    'r' => $_[3],
+    'b' => $_[4],
   };
+}
+
+sub pattern_parts {
+  my $self = shift;
+
+  if (exists $self->{pattern_parts}) {
+    return $self->{pattern_parts};
+  }
+  else {
+    return $self->_init;
+  }
 }
 
 sub _init {
@@ -250,7 +269,7 @@ sub _init {
     		$p->{'key-value-pair'}
     	)*
     /xms;
-
+    return $self->{pattern_parts};
 }
 
 

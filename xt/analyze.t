@@ -18,9 +18,9 @@ use OCR::hOCR;
 my $files = {
 	'cun_1.0'   => 'data/biostor-146511_01.cun.hocr',
 	'kraken'    => 'data/biostor-146511_02.kraken.hocr',
-	'tes_3.05'  => 'data/isis_152.5_01.deu_frak+deu.tess_3.05.hocr',
+	'tes3.05'  => 'data/isis_152.5_01.deu_frak+deu.tess_3.05.hocr',
 	'ocropy'    => 'data/ocropy.hocr',
-	'tes_3.04'  => 'data/isis_tess_3.04.hocr',
+	'tes3.04'  => 'data/isis_tess_3.04.hocr',
 };
 
 my $html_string =<<'HTML';
@@ -50,21 +50,22 @@ HTML
 my $root = {'children' => {}};
 my $elements = {};
 
-if (1) {
+if (0) {
   #print '*** ',$file,"\n";
   my $id = 'tes_3.05';
   my $object = OCR::hOCR->new();
   my $html = $object->parse($html_string);
-  print Dumper($html);
+  #print Dumper($html);
 
   $elements->{$id} = {};
   element($html->[0],$root->{'children'},$elements->{$id});
 
-  print Dumper($elements);
+  pretty($elements);
+  #print Dumper($elements);
   #$elements = {};
 }
 
-if (0) {
+if (1) {
 
 for my $id (keys %{$files}) {
   my $file = $files->{$id};
@@ -73,13 +74,61 @@ for my $id (keys %{$files}) {
   my $object = OCR::hOCR->new();
   my $html = $object->parsefile($file);
 
+  $elements->{$id} = {};
   element($html->[0],$root->{'children'},$elements->{$id});
 
-  print Dumper($elements->{$id});
+
+  #print Dumper($elements->{$id});
   #$elements = {};
 }
+  pretty($elements);
 }
 
+sub pretty {
+  my ($elements) = @_;
+
+  my $head = {'ids' => []};
+  my $rows = {};
+
+  my @ids = sort keys %{$elements};
+
+  for (my $i=0; $i <= $#ids; $i++) {
+    $head->{'ids'}->[$i] = $ids[$i];
+    for my $element (sort keys %{$elements->{$ids[$i]}}) {
+      if ($element eq 'children') { next; }
+
+      else {
+        if (exists $rows->{$element}) {
+          $rows->{$element}->[$i]++;
+        }
+        else {
+          for (0..$#ids) {
+            $rows->{$element}->[$_] = 0;
+          }
+          $rows->{$element}->[$i]++;
+        }
+
+        if (exists $elements->{$ids[$i]}->{$element}->{'title'}) {
+          for my $property (keys %{$elements->{$ids[$i]}->{$element}->{'title'}}) {
+            if (exists $rows->{$property}) {
+              $rows->{$property}->[$i]++;
+            }
+            else {
+              for (0..$#ids) {
+                $rows->{$property}->[$_] = 0;
+              }
+              $rows->{$property}->[$i]++;
+            }
+          }
+        }
+      }
+    }
+  }
+  print sprintf('%-12s','IDs'),"\t",join("\t",@{$head->{'ids'}}),"\n";
+  for my $row (sort keys %{$rows}) {
+    print sprintf('%-12s',$row),"\t",join("\t",@{$rows->{$row}}),"\n";
+  }
+}
 
 sub html {
   my ($html, $parent,$id_elements) = @_;
@@ -92,7 +141,7 @@ sub element {
 
   my $element_entry = {};
   if (!ref $element) {
-    $parent->{'PCDATA'}++;
+    $parent->{'text'}++;
     return;
   }
   elsif (exists $element->{'class'}) {

@@ -24,4 +24,8 @@ if (1) {
   ok($class->new());
 }
 
+$class = 'OCR::hOCR::Analyze';
+
+use_ok($class);
+
 done_testing;
